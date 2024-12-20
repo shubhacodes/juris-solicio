@@ -5,15 +5,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Label } from "./ui/label";
-import {
-  User,
-  MailIcon,
-  Phone,
-  Calendar,
-  ArrowRightIcon,
-  MessageSquare,
-  Linkedin,
-} from "lucide-react";
+import { ArrowRightIcon } from "lucide-react";
 
 const Form = () => {
   const [loading, setLoading] = useState(false);
@@ -21,29 +13,21 @@ const Form = () => {
     // Personal Details
     firstName: "",
     lastName: "",
-    dob: "",
     email: "",
     mobile: "",
-    alternatePhone: "",
-    // Professional Details
-    experience: "",
-    currentCompany: "",
-    designation: "",
-    ctc: "",
-    practiceArea: "",
-    college: "",
-    otherCollege: "",
-    degree: "",
-    gradYear: "",
-    // Additional Qualifications
-    llm: "",
-    preferredLocation: "",
-    // Resume & Photo
-    resume: null,
+    parentsMobile: "",
+
+    // Academic Details
+    class: "",
+    school: "",
+    subjectsOpted: "",
+
+    // Supporting Documents
+    marksheet: null,
     photo: null,
-    linkedIn: "",
-    // Message
-    otherDetails: "",
+
+    // Additional Notes
+    additionalNotes: "",
   });
 
   const handleChange = (e) => {
@@ -62,12 +46,33 @@ const Form = () => {
     try {
       const formDataToSend = new FormData();
 
-      // Append all form fields
-      Object.keys(formData).forEach((key) => {
-        if (formData[key] !== null) {
-          formDataToSend.append(key, formData[key]);
-        }
-      });
+      // Structure the data in sections as requested
+      const emailStructure = {
+        personalDetails: {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          mobile: formData.mobile,
+          parentsMobile: formData.parentsMobile,
+        },
+        academicDetails: {
+          class: formData.class,
+          school: formData.school,
+          subjectsOpted: formData.subjectsOpted,
+        },
+        additionalNotes: formData.additionalNotes,
+      };
+
+      // Append the structured data
+      formDataToSend.append("data", JSON.stringify(emailStructure));
+
+      // Append files separately
+      if (formData.marksheet) {
+        formDataToSend.append("marksheet", formData.marksheet);
+      }
+      if (formData.photo) {
+        formDataToSend.append("photo", formData.photo);
+      }
 
       const response = await fetch("/api/sendEmail", {
         method: "POST",
@@ -82,25 +87,15 @@ const Form = () => {
         setFormData({
           firstName: "",
           lastName: "",
-          dob: "",
           email: "",
           mobile: "",
-          alternatePhone: "",
-          experience: "",
-          currentCompany: "",
-          designation: "",
-          ctc: "",
-          practiceArea: "",
-          college: "",
-          otherCollege: "",
-          degree: "",
-          gradYear: "",
-          llm: "",
-          preferredLocation: "",
-          resume: null,
+          parentsMobile: "",
+          class: "",
+          school: "",
+          subjectsOpted: "",
+          marksheet: null,
           photo: null,
-          linkedIn: "",
-          otherDetails: "",
+          additionalNotes: "",
         });
         // Reset file inputs
         const fileInputs = document.querySelectorAll('input[type="file"]');
@@ -137,13 +132,6 @@ const Form = () => {
             required
           />
           <Input
-            id="dob"
-            type="date"
-            placeholder="Date of Birth"
-            value={formData.dob}
-            onChange={handleChange}
-          />
-          <Input
             id="email"
             type="email"
             placeholder="E-Mail"
@@ -154,112 +142,58 @@ const Form = () => {
           <Input
             id="mobile"
             type="tel"
-            placeholder="Mobile"
+            placeholder="Student Mobile"
             value={formData.mobile}
             onChange={handleChange}
             required
           />
           <Input
-            id="alternatePhone"
+            id="parentsMobile"
             type="tel"
-            placeholder="Alternate Phone Number"
-            value={formData.alternatePhone}
+            placeholder="Parent's Mobile"
+            value={formData.parentsMobile}
             onChange={handleChange}
+            required
           />
         </div>
       </section>
 
-      {/* Professional Details */}
+      {/* Academic Details */}
       <section className="space-y-4">
-        <h3 className="text-xl font-semibold">Professional Details</h3>
+        <h3 className="text-xl font-semibold">Academic Details</h3>
         <div className="grid gap-4">
           <Input
-            id="experience"
-            placeholder="Years of Professional Experience"
-            value={formData.experience}
+            id="class"
+            placeholder="Class/Standard"
+            value={formData.class}
             onChange={handleChange}
             required
           />
           <Input
-            id="currentCompany"
-            placeholder="Current Company"
-            value={formData.currentCompany}
-            onChange={handleChange}
-          />
-          <Input
-            id="designation"
-            placeholder="Current Designation"
-            value={formData.designation}
-            onChange={handleChange}
-          />
-          <Input
-            id="ctc"
-            placeholder="Current CTC"
-            value={formData.ctc}
-            onChange={handleChange}
-          />
-          <Input
-            id="practiceArea"
-            placeholder="Practice Area"
-            value={formData.practiceArea}
-            onChange={handleChange}
-          />
-          <Input
-            id="college"
-            placeholder="College"
-            value={formData.college}
+            id="school"
+            placeholder="School Name"
+            value={formData.school}
             onChange={handleChange}
             required
           />
           <Input
-            id="otherCollege"
-            placeholder="College Name (Other)"
-            value={formData.otherCollege}
-            onChange={handleChange}
-          />
-          <Input
-            id="degree"
-            placeholder="Degree"
-            value={formData.degree}
-            onChange={handleChange}
-          />
-          <Input
-            id="gradYear"
-            placeholder="Graduation Year"
-            value={formData.gradYear}
+            id="subjectsOpted"
+            placeholder="Subjects Opted"
+            value={formData.subjectsOpted}
             onChange={handleChange}
             required
           />
         </div>
       </section>
 
-      {/* Additional Qualifications */}
+      {/* Supporting Documents */}
       <section className="space-y-4">
-        <h3 className="text-xl font-semibold">Additional Qualifications</h3>
-        <div className="grid gap-4">
-          <Input
-            id="llm"
-            placeholder="LLM (if applicable)"
-            value={formData.llm}
-            onChange={handleChange}
-          />
-          <Input
-            id="preferredLocation"
-            placeholder="Preferred Location"
-            value={formData.preferredLocation}
-            onChange={handleChange}
-          />
-        </div>
-      </section>
-
-      {/* Resume & Photo */}
-      <section className="space-y-4">
-        <h3 className="text-xl font-semibold">Resume & Photo</h3>
+        <h3 className="text-xl font-semibold">Supporting Documents</h3>
         <div className="grid gap-4">
           <div className="space-y-2">
-            <Label htmlFor="resume">Resume/CV (PDF)</Label>
+            <Label htmlFor="marksheet">Marksheet (PDF)</Label>
             <Input
-              id="resume"
+              id="marksheet"
               type="file"
               accept=".pdf"
               onChange={handleChange}
@@ -267,32 +201,25 @@ const Form = () => {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="photo">Photograph</Label>
+            <Label htmlFor="photo">Student Photograph</Label>
             <Input
               id="photo"
               type="file"
               accept="image/*"
               onChange={handleChange}
+              required
             />
           </div>
-          <Input
-            id="linkedIn"
-            type="url"
-            placeholder="LinkedIn Profile URL"
-            value={formData.linkedIn}
-            onChange={handleChange}
-            required
-          />
         </div>
       </section>
 
-      {/* Message */}
+      {/* Additional Notes */}
       <section className="space-y-4">
-        <h3 className="text-xl font-semibold">Message</h3>
+        <h3 className="text-xl font-semibold">Additional Notes</h3>
         <Textarea
-          id="otherDetails"
-          placeholder="Any other details"
-          value={formData.otherDetails}
+          id="additionalNotes"
+          placeholder="Any additional information"
+          value={formData.additionalNotes}
           onChange={handleChange}
           className="min-h-[100px]"
         />

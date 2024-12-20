@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 
 // hooks
 
@@ -15,14 +15,14 @@ const Template = ({ children }) => {
     <>
       <motion.main
         variants={variants}
-        initial='hidden'
-        animate='enter'
-        transition={{ type: 'linear', delay: 0.2, duration: 0.4 }}
+        initial="hidden"
+        animate="enter"
+        transition={{ type: "linear", delay: 0.2, duration: 0.4 }}
       >
         {children}
       </motion.main>
       {/* completion bar */}
-    
+
       {/* <div className='h-[4000px]'></div> */}
     </>
   );

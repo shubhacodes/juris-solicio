@@ -1,4 +1,5 @@
 "use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -8,49 +9,43 @@ export default function NavBar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navItems = [
-    { name: "Practice Areas", href: "/practice-areas" },
     { name: "Our Team", href: "/our-team" },
-    { name: "Articles", href: "/articles" },
+    { name: "Announcements", href: "/announcements" },
     { name: "Careers", href: "/careers" },
     { name: "Contact Us", href: "/contact" },
   ];
 
   return (
-    <nav className="bg-white shadow-md">
+    <nav className="bg-white shadow-md font-mono">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-20">
-          {" "}
-          {/* Increased height */}
-          <div className="flex-shrink-0 flex items-center">
-            <Link href="/">
-              <div className="relative h-12 w-40">
-                {" "}
-                {/* Container with fixed dimensions */}
+        <div className="flex justify-between items-center py-4">
+          <div className="flex-grow flex items-center">
+            <Link href="/" className="flex-shrink-0">
+              <div className="relative w-full h-full min-h-[2rem]">
                 <Image
                   src="/logo.png"
                   alt="Logo"
-                  fill
-                  style={{ objectFit: "contain" }}
+                  height={100}
+                  width={100}
+                  style={{ objectFit: "contain", objectPosition: "left" }}
                   priority
                   className="cursor-pointer"
                 />
               </div>
             </Link>
           </div>
-          <div className="hidden sm:ml-6 sm:flex sm:space-x-8 sm:items-center">
-            {" "}
-            {/* Added items-center */}
+          <div className="hidden sm:flex sm:items-center sm:space-x-4 lg:space-x-8">
             {navItems.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
-                className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-900"
+                className="text-sm lg:text-base font-medium text-gray-500 hover:text-gray-900 whitespace-nowrap"
               >
                 {item.name}
               </Link>
             ))}
           </div>
-          <div className="-mr-2 flex items-center sm:hidden">
+          <div className="flex items-center sm:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
@@ -73,7 +68,7 @@ export default function NavBar() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="block pl-3 pr-4 py-2 text-base font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-50"
+                className="block px-3 py-2 text-base font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-50"
               >
                 {item.name}
               </Link>

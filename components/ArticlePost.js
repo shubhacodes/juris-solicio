@@ -26,7 +26,7 @@ const ArticlePost = ({ slug, date, chapterTitle }) => {
       </div>
       <CardFooter className="mt-auto">
         <Button variant="outline" asChild className="w-full">
-          <Link href={`/articles/${slug}`}>Read More</Link>
+          <Link href={`/announcements/${slug}`}>Read More</Link>
         </Button>
       </CardFooter>
     </Card>

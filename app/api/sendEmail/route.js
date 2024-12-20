@@ -18,17 +18,23 @@ export async function POST(req) {
     // Get form data
     const formData = await req.formData();
 
+    // Parse the JSON data
+    const jsonData = JSON.parse(formData.get("data"));
+
     // Extract files
-    const resume = formData.get("resume");
+    const marksheet = formData.get("marksheet");
     const photo = formData.get("photo");
 
     // Handle files
-    let resumePath, photoPath;
+    let marksheetPath, photoPath;
 
-    if (resume && resume instanceof Blob) {
-      const resumeBuffer = Buffer.from(await resume.arrayBuffer());
-      resumePath = path.join(tmpDir, `resume-${Date.now()}-${resume.name}`);
-      await writeFile(resumePath, resumeBuffer);
+    if (marksheet && marksheet instanceof Blob) {
+      const marksheetBuffer = Buffer.from(await marksheet.arrayBuffer());
+      marksheetPath = path.join(
+        tmpDir,
+        `marksheet-${Date.now()}-${marksheet.name}`
+      );
+      await writeFile(marksheetPath, marksheetBuffer);
     }
 
     if (photo && photo instanceof Blob) {
@@ -46,51 +52,43 @@ export async function POST(req) {
       },
     });
 
+    // Destructure data for easier access
+    const { personalDetails, academicDetails, additionalNotes } = jsonData;
+
     // Prepare email content
     const mailOptions = {
-      from: formData.get("email"),
+      from: personalDetails.email,
       to: process.env.GMAIL_USER,
-      subject: `New Job Application from ${formData.get(
-        "firstName"
-      )} ${formData.get("lastName")}`,
+      subject: `New Student Enquiry from ${personalDetails.firstName} ${personalDetails.lastName}`,
       text: `
 Personal Details:
 ---------------
-Name: ${formData.get("firstName")} ${formData.get("lastName")}
-Date of Birth: ${formData.get("dob")}
-Email: ${formData.get("email")}
-Mobile: ${formData.get("mobile")}
-Alternate Phone: ${formData.get("alternatePhone")}
+Name: ${personalDetails.firstName} ${personalDetails.lastName}
+Email: ${personalDetails.email}
+Student Mobile: ${personalDetails.mobile}
+Parent's Mobile: ${personalDetails.parentsMobile}
 
-Professional Details:
+Academic Details:
+---------------
+Class: ${academicDetails.class}
+School: ${academicDetails.school}
+Subjects Opted: ${academicDetails.subjectsOpted}
+
+Additional Notes:
+---------------
+${additionalNotes || "No additional notes provided."}
+
+Supporting Documents:
 ------------------
-Experience: ${formData.get("experience")} years
-Current Company: ${formData.get("currentCompany")}
-Designation: ${formData.get("designation")}
-CTC: ${formData.get("ctc")}
-Practice Area: ${formData.get("practiceArea")}
-College: ${formData.get("college")}
-Other College: ${formData.get("otherCollege")}
-Degree: ${formData.get("degree")}
-Graduation Year: ${formData.get("gradYear")}
-
-Additional Qualifications:
-----------------------
-LLM: ${formData.get("llm")}
-Preferred Location: ${formData.get("preferredLocation")}
-
-LinkedIn Profile: ${formData.get("linkedIn")}
-
-Additional Message:
-----------------
-${formData.get("otherDetails")}
+${marksheet ? "✓ Marksheet attached" : "✗ No marksheet attached"}
+${photo ? "✓ Student photograph attached" : "✗ No photograph attached"}
       `,
       attachments: [
-        ...(resumePath
+        ...(marksheetPath
           ? [
               {
-                filename: resume.name,
-                path: resumePath,
+                filename: marksheet.name,
+                path: marksheetPath,
               },
             ]
           : []),
@@ -110,7 +108,7 @@ ${formData.get("otherDetails")}
 
     // Clean up temporary files
     try {
-      if (resumePath) await fs.unlink(resumePath);
+      if (marksheetPath) await fs.unlink(marksheetPath);
       if (photoPath) await fs.unlink(photoPath);
     } catch (error) {
       console.error("Error cleaning up temporary files:", error);
